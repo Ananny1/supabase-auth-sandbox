@@ -7,10 +7,20 @@ local dev to a live deployment.
 
 ## Current state
 
-This project currently connects to a **single Supabase project only**
-(referred to informally as "Prod" for now). There is no separate Dev project,
-no database migrations folder, and no CI/CD pipeline yet — those will be
-added later as the workflow is learned step by step.
+This project now has a full dev/prod split set up:
+
+- **Two Supabase projects**: `production` and `development` — completely
+  separate databases, auth users, and settings. Nothing you do in one
+  affects the other.
+- **Two git branches**: `main` (production) and `development` (safe to
+  break, test in here first).
+- **One Vercel project**, connected to this GitHub repo, with environment
+  variables scoped so each branch automatically talks to the matching
+  Supabase project.
+
+There is still no database migrations folder and no automated tests —
+this is a practice project focused on the deploy workflow itself, not a
+real app.
 
 ## What's here
 
@@ -75,78 +85,7 @@ npm install
 npm run dev
 ```
 
-## Issues we ran into (and how we fixed them)
+## More
 
-Notes from setting this up, kept simple for future reference.
-
-### 1. "Anonymous sign-ins are disabled" when clicking Sign Up
-
-**Cause:** The Sign Up / Log In buttons used `type="submit"`, but the code only
-handled the button's `onClick` (which calls `preventDefault()`). That stopped
-the browser's normal form submission — which is also what runs the `required`
-field check. So clicking Sign Up with empty fields still fired the request,
-sending an empty email/password to Supabase. Supabase treats a signup with no
-email as an "anonymous sign-in" attempt, which is disabled by default.
-
-**Fix:** Added a manual check in the code — if email or password is empty,
-show an error and stop, instead of calling Supabase.
-
-### 2. "Email rate limit exceeded"
-
-**Cause:** Supabase's built-in email sender (used until you set up your own)
-only allows a few emails per hour. Every signup attempt sends a confirmation
-email, so testing signup repeatedly used up the limit fast.
-
-**Fix (quick, for a sandbox project):** Turn off **"Confirm email"** in
-Supabase: Authentication → Sign In / Providers → Email. With this off, signup
-finishes instantly and no email is sent at all, so this error can't happen.
-
-**Note:** Turning this off does *not* instantly clear an already-tripped rate
-limit — that resets on its own after about an hour. Also, using a fresh email
-address you haven't tried yet was another quick workaround.
-
-**Fix (proper, if you want real confirmation emails):** Set up your own email
-sender (SMTP) — see below.
-
-### 3. Setting up Resend as a custom email sender
-
-We used [Resend](https://resend.com) so Supabase could send real confirmation
-emails instead of relying on its limited built-in sender.
-
-Ran into three mistakes in a row while filling out Supabase's SMTP form
-(Authentication → Sign In / Providers → Emails):
-
-- **"535 Invalid username"** — the Username field had the wrong value in it
-  (browser autofill had put old saved-login data in there). Resend's SMTP
-  requires the Username to be the literal word `resend` — not your Resend
-  account name or email.
-- **"535 Authentication credentials invalid"** — the Password field wasn't a
-  real Resend API key yet. Fixed by creating one in Resend under **API
-  keys** (with "Sending access") and pasting that in as the password.
-- **"You can only send testing emails to your own email address"** — without
-  a verified domain in Resend, it only delivers to the email address you
-  signed up to Resend with. Any other recipient gets silently rejected.
-
-**Correct SMTP settings for Resend:**
-| Field | Value |
-|---|---|
-| Host | `smtp.resend.com` |
-| Port | `465` |
-| Username | `resend` (literally this word) |
-| Password | your Resend API key (starts with `re_`) |
-| Sender email | `onboarding@resend.dev` (or an address on a verified domain) |
-
-### 4. Wanting ANY email address to be able to sign up
-
-With Resend's free/unverified setup, only your own account email can
-receive confirmation emails. To let any real email sign up, you'd need to
-verify your own domain in Resend (Domains tab, add DNS records) and send
-from an address on that domain. For a sandbox project, it's simpler to just
-turn off "Confirm email" instead (see issue #2) — no email sending needed at
-all.
-
-### General note: no manual users table needed
-
-Supabase automatically creates and manages an `auth.users` table — visible
-under Authentication → Users in the dashboard. No need to create a users
-table yourself.
+See **[WORKFLOW.md](./WORKFLOW.md)** for the deploy workflow, safety
+checklist, and troubleshooting log.
