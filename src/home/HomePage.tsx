@@ -1,5 +1,6 @@
 import { useAuth } from '@/auth/useAuth'
 import CatMascot from '@/components/CatMascot'
+import { SleepingCat, PawPrint } from '@/components/CatDecor'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -15,6 +16,21 @@ function HomePage() {
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-4">
           <p className="text-sm break-all text-muted-foreground">{user?.email}</p>
+
+          <div className="flex items-center justify-center gap-2 text-orange-400 dark:text-orange-300">
+            <PawPrint className="h-5 w-5" />
+            <PawPrint className="h-5 w-5 opacity-70" />
+            <PawPrint className="h-5 w-5 opacity-40" />
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            Fun fact: cats spend about 70% of their life sleeping, which
+            works out to somewhere between 12 and 16 hours a day. Basically
+            professional nappers.
+          </p>
+
+          <SleepingCat className="h-16 w-28" />
+
           <Button
             variant="outline"
             className="border-orange-300"
