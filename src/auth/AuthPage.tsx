@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth } from './useAuth'
+import CatMascot from '@/components/CatMascot'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -60,11 +61,12 @@ function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center p-6">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-xl">Sandbox Auth</CardTitle>
-          <CardDescription>Sign up or log in to continue</CardDescription>
+    <div className="flex min-h-svh items-center justify-center bg-gradient-to-b from-pink-50 via-orange-50 to-pink-50 p-6 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
+      <Card className="w-full max-w-sm border-orange-200 shadow-lg shadow-orange-100 dark:border-neutral-800 dark:shadow-none">
+        <CardHeader className="items-center text-center">
+          <CatMascot className="mb-2 h-24 w-24" />
+          <CardTitle className="text-xl">Purrfectly Sandboxed</CardTitle>
+          <CardDescription>Sign up or log in to continue, meow~</CardDescription>
         </CardHeader>
         <CardContent>
           <form className="flex flex-col gap-4">
@@ -91,13 +93,18 @@ function AuthPage() {
               />
             </div>
             <div className="flex gap-2 pt-2">
-              <Button type="submit" className="flex-1" onClick={handleSignUp} disabled={loading}>
-                Sign Up
+              <Button
+                type="submit"
+                className="flex-1 bg-orange-400 hover:bg-orange-500"
+                onClick={handleSignUp}
+                disabled={loading}
+              >
+                Sign Up 🐾
               </Button>
               <Button
                 type="submit"
                 variant="outline"
-                className="flex-1"
+                className="flex-1 border-orange-300"
                 onClick={handleLogIn}
                 disabled={loading}
               >
